@@ -1,10 +1,12 @@
 async function handleChange(event) {
-  await fetch("/api/led", { method: "POST" });
+  const data = new FormData();
+  data.append("light", event.target.checked ? "on" : "off");
+  await fetch("/api/light", { method: "POST", body: data });
 }
 
 async function handleLoaded() {
-  const res = await fetch("/api/led").then((res) => res.json());
-  document.getElementById("toggle").checked = res.led === "off";
+  const res = await fetch("/api/light").then((res) => res.json());
+  document.getElementById("checkbox").checked = res.light === "on";
 }
 
 handleLoaded();

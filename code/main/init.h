@@ -45,7 +45,6 @@ bool setupStation(const char* ssid, const char* password, const char* hostname) 
 
 void init(uint32_t baud_rate, const char* hostname) {
   // init led
-  pinMode(LED, OUTPUT);
   pinMode(builtInLED, OUTPUT);
   pinMode(buttonUser, INPUT_PULLUP);
   pinMode(buttonRest, INPUT_PULLUP);

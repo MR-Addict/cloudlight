@@ -17,7 +17,17 @@ void handleGetRequest(AsyncWebServerRequest* request) {
 
 // handle turn on light request
 void handlePostRequest(AsyncWebServerRequest* request) {
-  String message = toggleLED(true);
+  String command;
+  for (uint8_t i = 0; i < request->params(); i++) {
+    AsyncWebParameter* p = request->getParam(i);
+    if (p->name() == "light")command = p->value();
+  }
+
+  if (command != "on" && command != "off") {
+    request->send(400, "text/plain", "Bad request");
+    return;
+  }
+  String message = toggleLED(command == "on");
   request->send(200, "application/json", message);
 }
 
@@ -37,6 +47,11 @@ void handlePostCredentials(AsyncWebServerRequest* request) {
     AsyncWebParameter* p = request->getParam(i);
     if (p->name() == "ssid")ssid = p->value();
     else if (p->name() == "password")password = p->value();
+  }
+
+  if (ssid == "on" || password == "") {
+    request->send(400, "text/plain", "Bad request");
+    return;
   }
 
   if (ssid != "")preferences.putString("ssid", ssid);
@@ -73,8 +88,8 @@ void setupServer() {
   server.on("/", HTTP_GET, rootPage);
   server.on("/setup", HTTP_GET, setupPage);
 
-  server.on("/api/led", HTTP_GET, handleGetRequest);
-  server.on("/api/led", HTTP_POST, handlePostRequest);
+  server.on("/api/light", HTTP_GET, handleGetRequest);
+  server.on("/api/light", HTTP_POST, handlePostRequest);
 
   server.on("/api/credentials", HTTP_GET, handleGetCredentials);
   server.on("/api/credentials", HTTP_POST, handlePostCredentials);

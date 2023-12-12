@@ -6,9 +6,10 @@
 
 bool isReboot = false;
 bool isAPMode = false;
+bool isDisplay = false;
 bool isEditSetup = false;
 
-const uint8_t LED = 4;
+//const uint8_t LED = 4;
 const uint8_t builtInLED = 2;
 const uint8_t buttonRest = 0;
 const uint8_t buttonUser = 5;

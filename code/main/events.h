@@ -18,7 +18,7 @@ void listenButtonPressed() {
   else if (!digitalRead(buttonUser)) {
     delay(10);
     if (!digitalRead(buttonUser)) {
-      toggleLED(!isDisplay);
+      isDisplay = !isDisplay;
       while (!digitalRead(buttonUser));
     }
   }

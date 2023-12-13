@@ -45,10 +45,12 @@ bool setupStation(const char* ssid, const char* password, const char* hostname) 
 
 void init(uint32_t baud_rate, const char* hostname) {
   // init led
+  Serial.begin(baud_rate);
   pinMode(builtInLED, OUTPUT);
   pinMode(buttonUser, INPUT_PULLUP);
   pinMode(buttonRest, INPUT_PULLUP);
-  Serial.begin(baud_rate);
+  FastLED.addLeds<WS2812, LEDPin, GRB>(leds, LEDCount);
+  FastLED.setBrightness(LEDBrightness);
 
   // init SPIFFS
   if (!SPIFFS.begin()) {

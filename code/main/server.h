@@ -1,6 +1,6 @@
 // root page
 void rootPage(AsyncWebServerRequest* request) {
-  if (isEditSetup)request->redirect("setup");
+  if (isEditSetup)request->redirect("/setup");
   else request-> send(SPIFFS, "/index.html", "text/html");
 }
 
@@ -9,26 +9,33 @@ void setupPage(AsyncWebServerRequest* request) {
   request-> send(SPIFFS, "/setup.html", "text/html");
 }
 
-// handle get light status request
+// handle get light status
 void handleGetRequest(AsyncWebServerRequest* request) {
   String message = getLED();
   request->send(200, "application/json", message);
 }
 
-// handle turn on light request
+// handle update light
 void handlePostRequest(AsyncWebServerRequest* request) {
-  String command;
+  String state = "";
+  int brightness = -1;
   for (uint8_t i = 0; i < request->params(); i++) {
     AsyncWebParameter* p = request->getParam(i);
-    if (p->name() == "light")command = p->value();
+    if (p->name() == "state")state = p->value();
+    else if (p->name() == "brightness")brightness = String(p->value()).toInt();
   }
 
-  if (command != "on" && command != "off") {
+  bool isBadRequest = false;
+  if (state != "" && state != "on" && state != "off")isBadRequest = true;
+  if (brightness != -1 && (brightness < 0 || brightness > 255))isBadRequest = true;
+  if (isBadRequest) {
     request->send(400, "text/plain", "Bad request");
     return;
   }
-  String message = toggleLED(command == "on");
-  request->send(200, "application/json", message);
+
+  if (brightness != -1 )LEDBrightness = brightness;
+  if (state != "")isDisplay = state == "on";
+  request->send(200, "application/json", getLED());
 }
 
 // get credentials

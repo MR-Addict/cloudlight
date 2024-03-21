@@ -58,8 +58,10 @@ void init(uint32_t baud_rate, const char* hostname) {
     return;
   }
 
-  // preferences credentials
-  preferences.begin("credentials", false);
+  // get stored preferences
+  preferences.begin("config", false);
+  isDisplay = preferences.getBool("state", true);
+  LEDBrightness = preferences.getUChar("brightness", 100);
   const String ssid = preferences.getString("ssid", "");
   const String password = preferences.getString("password", "");
 

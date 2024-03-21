@@ -15,11 +15,4 @@ void listenButtonPressed() {
       if (millis() - last > 3000) setupAP(hostname);
     }
   }
-  else if (!digitalRead(buttonUser)) {
-    delay(10);
-    if (!digitalRead(buttonUser)) {
-      isDisplay = !isDisplay;
-      while (!digitalRead(buttonUser));
-    }
-  }
 }

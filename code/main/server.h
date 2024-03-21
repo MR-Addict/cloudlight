@@ -10,13 +10,13 @@ void setupPage(AsyncWebServerRequest* request) {
 }
 
 // handle get light status
-void handleGetRequest(AsyncWebServerRequest* request) {
+void handleGetLightStatus(AsyncWebServerRequest* request) {
   String message = getLED();
   request->send(200, "application/json", message);
 }
 
-// handle update light
-void handlePostRequest(AsyncWebServerRequest* request) {
+// handle update light status
+void handlePatchLightStatus(AsyncWebServerRequest* request) {
   String state = "";
   int brightness = -1;
   for (uint8_t i = 0; i < request->params(); i++) {
@@ -33,8 +33,12 @@ void handlePostRequest(AsyncWebServerRequest* request) {
     return;
   }
 
-  if (brightness != -1 )LEDBrightness = brightness;
-  if (state != "")isDisplay = state == "on";
+  if (state != "" || brightness != -1) {
+    if (brightness == -1 )brightness = LEDBrightness;
+    if (state == "")state = isDisplay ? "on" : "off";
+    setLED(state == "on", brightness);
+  }
+
   request->send(200, "application/json", getLED());
 }
 
@@ -56,7 +60,7 @@ void handlePostCredentials(AsyncWebServerRequest* request) {
     else if (p->name() == "password")password = p->value();
   }
 
-  if (ssid == "on" || password == "") {
+  if (ssid == "" || password == "") {
     request->send(400, "text/plain", "Bad request");
     return;
   }
@@ -95,8 +99,8 @@ void setupServer() {
   server.on("/", HTTP_GET, rootPage);
   server.on("/setup", HTTP_GET, setupPage);
 
-  server.on("/api/light", HTTP_GET, handleGetRequest);
-  server.on("/api/light", HTTP_POST, handlePostRequest);
+  server.on("/api/light", HTTP_GET, handleGetLightStatus);
+  server.on("/api/light", HTTP_PATCH, handlePatchLightStatus);
 
   server.on("/api/credentials", HTTP_GET, handleGetCredentials);
   server.on("/api/credentials", HTTP_POST, handlePostCredentials);

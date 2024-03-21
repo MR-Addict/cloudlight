@@ -9,6 +9,13 @@ String getLED() {
   return message;
 }
 
+void setLED(bool state, uint8_t brightness) {
+  isDisplay = state;
+  LEDBrightness = brightness;
+  preferences.putBool("state", state);
+  preferences.putUChar("brightness", brightness);
+}
+
 // refresh LED
 void refreshLED() {
   uint8_t sinBeatA = beatsin8(5, 0, 255, 0, 0);

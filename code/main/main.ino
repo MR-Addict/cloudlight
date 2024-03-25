@@ -9,9 +9,9 @@ bool isReboot = false;
 bool isAPMode = false;
 bool isEditSetup = false;
 
-bool isDisplay = true;
+bool LEDState = true;
 const uint8_t LEDPin = 4;
-const uint8_t LEDCount = 29;
+uint8_t LEDCount = 60;
 uint8_t LEDBrightness = 100;
 
 const uint8_t buttonRest = 0;
@@ -19,7 +19,7 @@ const uint8_t buttonUser = 5;
 const uint8_t builtInLED = 2;
 const char* hostname = "cloudlight";
 
-CRGB leds[LEDCount];
+CRGB leds[255];
 AsyncWebServer server(80);
 Preferences preferences;
 

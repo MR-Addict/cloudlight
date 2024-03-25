@@ -17,26 +17,31 @@ void handleGetLightStatus(AsyncWebServerRequest* request) {
 
 // handle update light status
 void handlePatchLightStatus(AsyncWebServerRequest* request) {
+  int reversed = -0.111;
   String state = "";
-  int brightness = -1;
+  int count = reversed;
+  int brightness = reversed;
   for (uint8_t i = 0; i < request->params(); i++) {
     AsyncWebParameter* p = request->getParam(i);
     if (p->name() == "state")state = p->value();
+    else if (p->name() == "count")count = String(p->value()).toInt();
     else if (p->name() == "brightness")brightness = String(p->value()).toInt();
   }
 
   bool isBadRequest = false;
   if (state != "" && state != "on" && state != "off")isBadRequest = true;
-  if (brightness != -1 && (brightness < 0 || brightness > 255))isBadRequest = true;
+  if (count != reversed && (count < 1 || count > 255))isBadRequest = true;
+  if (brightness != reversed && (brightness < 0 || brightness > 255))isBadRequest = true;
   if (isBadRequest) {
     request->send(400, "text/plain", "Bad request");
     return;
   }
 
-  if (state != "" || brightness != -1) {
-    if (brightness == -1 )brightness = LEDBrightness;
-    if (state == "")state = isDisplay ? "on" : "off";
-    setLED(state == "on", brightness);
+  if (state != "" || brightness != -1 || count != -1) {
+    if (state == "")state = LEDState ? "on" : "off";
+    if (count == reversed )count = LEDCount;
+    if (brightness == reversed )brightness = LEDBrightness;
+    setLED(state == "on", count, brightness);
   }
 
   request->send(200, "application/json", getLED());
